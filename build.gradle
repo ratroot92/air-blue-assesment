@@ -44,6 +44,11 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+//    Testing
+    implementation 'org.mockito:mockito-core:4.5.1'
+    implementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+    implementation 'org.springframework.boot:spring-boot-starter-test'
+
 
     // testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -55,6 +60,11 @@ dependencyManagement {
     }
 }
 
+bootRun {
+    args = ['--stacktrace']
+//    jvmArgs = ["-Dlogging.level.root=DEBUG"]
+}
+
 tasks.named('test') {
-//    useJUnitPlatform()
+    useJUnitPlatform()
 }

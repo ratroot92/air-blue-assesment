@@ -7,14 +7,15 @@ spring:
     password: "password"
   jpa:
     hibernate:
-      show-sql: true
+      #      show-sql: true
+      ddl-auto: update
     database-platform: "org.hibernate.dialect.PostgreSQLDialect"
 
   application:
     name: "evergreenmedic"
-server:
-  port: 8080
 
-
-
+  web:
+    resources:
+      #      static-locations: classpath:/static/
+      static-locations: file:./static/
 

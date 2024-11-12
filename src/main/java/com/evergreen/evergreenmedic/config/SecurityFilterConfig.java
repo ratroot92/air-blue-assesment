@@ -1,6 +1,7 @@
 package com.evergreen.evergreenmedic.config;
 
 
+import com.evergreen.evergreenmedic.filters.CookieFilter;
 import com.evergreen.evergreenmedic.filters.JwtFilter;
 import com.evergreen.evergreenmedic.implementations.CustomUserDetailsServiceImpl;
 import lombok.AllArgsConstructor;
@@ -23,15 +24,18 @@ public class SecurityFilterConfig {
 
     private CustomUserDetailsServiceImpl customUserDetailsServiceImpl;
     private JwtFilter jwtFilter;
+    private CookieFilter cookieFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests()
-                .requestMatchers("/api/v1/auth/login", "/api/v1/auth/register")
+//                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/api/v1/auth/login", "/api/v1/auth/register", "/uploads/**")
                 .permitAll().anyRequest().authenticated()
                 .and()
                 .csrf().disable();
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(cookieFilter, UsernamePasswordAuthenticationFilter.class);
         //        return httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().csrf().disable();
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         return httpSecurity.build();

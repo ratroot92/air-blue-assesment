@@ -30,6 +30,7 @@ public class UserDto {
         userDto.setEmail(user.getEmail());
         userDto.setPhoneNumber(user.getPhoneNumber());
         userDto.setRole(user.getRole());
+        userDto.setUserDetail(user.getUserDetailEntity());
         userDto.setCreatedAt(user.getCreatedAt());
         userDto.setUpdatedAt(user.getUpdatedAt());
         return userDto;

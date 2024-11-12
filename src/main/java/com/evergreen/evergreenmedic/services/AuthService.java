@@ -6,8 +6,10 @@ import com.evergreen.evergreenmedic.dtos.requests.RegisterUserReqDto;
 import com.evergreen.evergreenmedic.dtos.requests.UserLoginByEmailReqDto;
 import com.evergreen.evergreenmedic.dtos.response.RegisterUserRespDto;
 import com.evergreen.evergreenmedic.dtos.response.UserLoginReqByEmailRespDto;
+import com.evergreen.evergreenmedic.entities.UserDetailEntity;
 import com.evergreen.evergreenmedic.entities.UserEntity;
 import com.evergreen.evergreenmedic.implementations.CustomUserDetailsServiceImpl;
+import com.evergreen.evergreenmedic.repositories.UserDetailRepository;
 import com.evergreen.evergreenmedic.repositories.UserRepository;
 import com.evergreen.evergreenmedic.utils.JwtUtil;
 import lombok.AllArgsConstructor;
@@ -18,6 +20,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.ServletWebRequest;
+
+import java.security.Principal;
 
 @Service
 @AllArgsConstructor
@@ -28,6 +33,7 @@ public class AuthService {
     private final CustomUserDetailsServiceImpl userDetailsService;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+    private final UserDetailRepository userDetailRepository;
 
     public RegisterUserRespDto registerUser(RegisterUserReqDto registerUserReqDto) {
         String firstName = registerUserReqDto.getFirstName();
@@ -41,7 +47,13 @@ public class AuthService {
         userEntity.setEmail(email);
         userEntity.setPassword(passwordEncoder.encode(password));
         userEntity.setPhoneNumber(phoneNumber);
+        UserDetailEntity userDetailEntity = new UserDetailEntity();
+        userDetailEntity.setUserEntity(userEntity);
+        userDetailEntity = userDetailRepository.save(userDetailEntity);
+//        userEntity.setUserDetailEntity(new userDetailEntity());
         userEntity = userRepository.save(userEntity);
+
+
         RegisterUserRespDto registerUserRespDto = new RegisterUserRespDto();
         registerUserRespDto.setAccessToken(jwtUtil.generateToken(userEntity.getEmail()));
         registerUserRespDto.setUser(UserDto.mapToDto(userEntity));
@@ -64,7 +76,10 @@ public class AuthService {
         return userLoginRespDto;
     }
 
-    public Boolean isAuthenticated() {
-        return true;
+    public ProtectedUserDto isAuthenticated(ServletWebRequest request) {
+        Principal principal = request.getUserPrincipal();
+        String email = principal.getName();
+        UserEntity userEntity = userRepository.findByEmail(email);
+        return ProtectedUserDto.mapToDto(userEntity);
     }
 }

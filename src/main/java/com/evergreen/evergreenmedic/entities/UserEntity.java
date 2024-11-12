@@ -42,6 +42,9 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private UserRoleEnum role = UserRoleEnum.USER;
 
+    @OneToOne(mappedBy = "userEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private UserDetailEntity userDetailEntity;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
     private Instant createdAt;

@@ -20,14 +20,16 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        UserEntity userEntity = userRepository.findByEmail(email);
-        log.info(" CustomUserDetailsServiceImpl [loadUserByUsername] userEntity : {}", userEntity);
+        try {
+            UserEntity userEntity = userRepository.findByEmail(email);
 
-        if (userEntity == null) {
-            throw new UsernameNotFoundException("User not found with email" + email);
-        } else {
-            List<String> userRoles = new ArrayList<>();
-            userRoles.add(userEntity.getRole().name());
+
+            if (userEntity == null) {
+                throw new UsernameNotFoundException("User not found with email" + email);
+            } else {
+                log.info(" CustomUserDetailsServiceImpl [loadUserByUsername] userEntity : {}", userEntity.getEmail());
+                List<String> userRoles = new ArrayList<>();
+                userRoles.add(userEntity.getRole().name());
 //            UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
 //                    .username(userEntity.getEmail())
 //                    .password(userEntity.getPassword())
@@ -35,9 +37,13 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 ////                    .roles(String.valueOf(userRoles))
 ////                    .roles(userRoles.toArray(new String[0]))
 //                    .build();
-            return org.springframework.security.core.userdetails.User.withUsername(userEntity.getEmail()).password(userEntity.getPassword()).roles(userRoles.toArray(new String[0])).build();
+                return org.springframework.security.core.userdetails.User.withUsername(userEntity.getEmail()).password(userEntity.getPassword()).roles(userRoles.toArray(new String[0])).build();
 //            log.info(" CustomUserDetailsServiceImpl [loadUserByUsername] userRoles.toArray(new String[0]) : {}", userRoles.toArray(new String[0]));
 //            return userDetails;
+            }
+        } catch (Exception exception) {
+            System.out.println(exception.getMessage());
+            throw new UsernameNotFoundException("User not found with email" + email);
         }
     }
 }

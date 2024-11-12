@@ -1,5 +1,6 @@
 package com.evergreen.evergreenmedic.dtos;
 
+import com.evergreen.evergreenmedic.entities.UserDetailEntity;
 import com.evergreen.evergreenmedic.entities.UserEntity;
 import com.evergreen.evergreenmedic.enums.UserRoleEnum;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ public class ProtectedUserDto {
     private String email;
     private String phoneNumber;
     private UserRoleEnum Role;
+    private UserDetailEntity userDetail;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -29,6 +31,7 @@ public class ProtectedUserDto {
         userDto.setEmail(user.getEmail());
         userDto.setPhoneNumber(user.getPhoneNumber());
         userDto.setRole(user.getRole());
+        userDto.setUserDetail(user.getUserDetailEntity());
         userDto.setCreatedAt(user.getCreatedAt());
         userDto.setUpdatedAt(user.getUpdatedAt());
         return userDto;

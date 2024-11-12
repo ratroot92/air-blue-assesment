@@ -2,8 +2,13 @@ package com.evergreen.evergreenmedic.controllers;
 
 import com.evergreen.evergreenmedic.dtos.ProtectedUserDto;
 import com.evergreen.evergreenmedic.dtos.requests.CreateNewUserRequestDto;
+import com.evergreen.evergreenmedic.dtos.requests.user.UpdateCompleteUserReqDto;
+import com.evergreen.evergreenmedic.dtos.requests.user.UpdateUserEmailReqDto;
+import com.evergreen.evergreenmedic.dtos.requests.user.UpdateUserPasswordReqDto;
 import com.evergreen.evergreenmedic.services.UserService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +29,6 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<ProtectedUserDto>> getAllUsers() {
-        log.info("request received");
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUsers());
     }
 
@@ -41,6 +45,22 @@ public class UserController {
     @DeleteMapping("{id}")
     public ResponseEntity<Short> deleteUserById(@PathVariable("id") Short id) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.deleteUserById(id));
+    }
+
+    @PutMapping()
+    public ResponseEntity<ProtectedUserDto> updateUser(@RequestBody UpdateCompleteUserReqDto updateCompleteUserReqDto) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(updateCompleteUserReqDto));
+    }
+
+    @PostMapping("/email")
+    public ResponseEntity<ProtectedUserDto> updateUserEmail(@RequestBody UpdateUserEmailReqDto updateUserEmailReqDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserEmail(updateUserEmailReqDto));
+    }
+
+    @PostMapping("/password")
+    public ResponseEntity<ProtectedUserDto> updateUserPassword(@RequestBody @Valid UpdateUserPasswordReqDto updateUserPasswordReqDto) throws BadRequestException {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserPassword(updateUserPasswordReqDto));
     }
 
     @PostMapping("/seed")

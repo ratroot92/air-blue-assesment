@@ -1,13 +1,13 @@
 package com.evergreen.evergreenmedic.dtos.requests;
 
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 public class UserLoginByEmailReqDto {
-    @NotNull
+    @NotBlank
     private String email;
-    @NotNull
+    @NotBlank
     private String password;
 }

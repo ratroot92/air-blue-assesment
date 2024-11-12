@@ -1,0 +1,58 @@
+
+### start zookeeper ###
+
+SERVER_JVMFLAGS="-Dapple.awt.UIElement=true" /opt/homebrew/opt/zookeeper/bin/zkServer start-foreground
+
+### start kafka ###
+
+/opt/homebrew/opt/kafka/bin/kafka-server-start /opt/homebrew/etc/kafka/server.properties
+
+### create kafka topic ###
+
+/opt/homebrew/opt/kafka/bin/kafka-topics --create \
+--bootstrap-server localhost:9092 \
+--replication-factor 1 \
+--partitions 2 \
+--topic sample-topic
+
+### delete kafka topic ###
+
+/opt/homebrew/opt/kafka/bin/kafka-topics --delete \
+--bootstrap-server localhost:9092 \
+--topic sample-topic
+
+
+### list all kafka topics
+
+/opt/homebrew/opt/kafka/bin/kafka-topics \
+--list \
+--bootstrap-server localhost:9092
+
+
+### delete all topics
+
+/opt/homebrew/opt/kafka/bin/kafka-topics --delete \
+--bootstrap-server localhost:9092 \
+--topic sample-top,ACCOUNT_STATUS_UPDATED,ACTIVITY_LOG,CREATE_DLQ_TOPIC,ASSIGN_GROUPS_TO_USER,DUAL_CAPTURE,EVENT_SET_PAN,EVENT_SET_PIN,GENERATE_REPORT,OTP_RECIEVED,RETRY_TOPIC,RETRY_TOPIC_UPDATE_STATUS,SEND_AUTH_OTP,SEND_NOTIFICATION,TEST_EVENT,TRANSACTION_LOG,TRANSACTION_MAP,USER_REGISTERED,USER_REGISTERED-dlt,USER_REGISTERED-retry-1000,USER_REGISTERED-retry-2000,USER_REGISTERED-retry-4000,USER_REGISTERED-retry-5000,USER_UPDATED,retry-topic
+
+
+
+/opt/homebrew/opt/kafka/bin/kafka-console-producer --help
+/opt/homebrew/opt/kafka/bin/kafka-console-producer \
+--bootstrap-server localhost:9092 \
+--message-send-max-retries 3 \
+--topic sample-topic
+
+
+
+
+/opt/homebrew/opt/kafka/bin/kafka-console-consumer --help
+/opt/homebrew/opt/kafka/bin/kafka-console-consumer \
+--bootstrap-server localhost:9092 \
+--from-beginning \
+--topic sample-topic
+
+
+/opt/homebrew/opt/kafka/bin/kafka-console-consumer \
+--bootstrap-server localhost:9092 \
+--topic sample-topic
