@@ -5,7 +5,7 @@ import com.evergreen.evergreenmedic.dtos.requests.CreateRouteRateLimiterReq;
 import com.evergreen.evergreenmedic.entities.RouteRateLimiterEntity;
 import com.evergreen.evergreenmedic.entities.UserEntity;
 import com.evergreen.evergreenmedic.enums.CustomHttpMethodEnum;
-import com.evergreen.evergreenmedic.enums.UserRoleEnum;
+import com.evergreen.evergreenmedic.enums.UserRole;
 import com.evergreen.evergreenmedic.repositories.RouteRateLimiterRepository;
 import com.evergreen.evergreenmedic.repositories.UserRepository;
 import io.github.bucket4j.Bandwidth;
@@ -47,7 +47,7 @@ public class RateLimiterService {
         buckets.remove(authentication.getPrincipal().toString());
 //        Bucket clientBucket = buckets.get(authentication.getPrincipal().toString());
 //        if (clientBucket == null) {
-        UserEntity userEntity = userRepository.findByEmail(authentication.getPrincipal().toString());
+        UserEntity userEntity = userRepository.findByEmail(authentication.getPrincipal().toString()).orElseThrow(EntityNotFoundException::new);
         Optional<RouteRateLimiterEntity> rateLimiterEntity = routeRateLimiterRepository.findByRouteUrlAndRouteMethodAndUserRole(activateRouteBucket.getRouteUri(), activateRouteBucket.getHttpMethod(), userEntity.getRole());
         if (rateLimiterEntity.isPresent()) {
             long allowedRequestPerMinute = rateLimiterEntity.get().getAllowedRequestPerMinute();
@@ -81,7 +81,7 @@ public class RateLimiterService {
     }
 
     public RouteRateLimiterEntity createRouteRateLimiter(CreateRouteRateLimiterReq createRouteRateLimiterReq) {
-        UserRoleEnum userRole = createRouteRateLimiterReq.getUserRole();
+        UserRole userRole = createRouteRateLimiterReq.getUserRole();
         String routeUrl = createRouteRateLimiterReq.getRouteUrl();
         CustomHttpMethodEnum routeMethod = createRouteRateLimiterReq.getRouteMethod();
         Optional<RouteRateLimiterEntity> routeRateLimiterEntityExists = routeRateLimiterRepository.findByRouteUrlAndRouteMethodAndUserRole(routeUrl, routeMethod, userRole);

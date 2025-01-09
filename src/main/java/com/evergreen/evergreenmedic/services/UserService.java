@@ -33,7 +33,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserDetailRepository userDetailRepository;
 
-    public Optional<ProtectedUserDto> getUserById(Short id) {
+    public Optional<ProtectedUserDto> getUserById(Integer id) {
 //        Optional<UserEntity> userEntity = Optional.ofNullable(userRepository.findById(id).orElseThrow(EntityNotFoundException::new));
         Optional<UserEntity> userEntity = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found.")));
         ProtectedUserDto userDto = UserDto.mapToDto(userEntity.get());
@@ -64,7 +64,7 @@ public class UserService {
         userDto.setPhoneNumber(phoneNumber);
         UserEntity userEntity = UserDto.mapToEntity(userDto);
         UserDetailEntity userDetailEntity = new UserDetailEntity();
-        userDetailEntity.setUserEntity(userEntity);
+        userDetailEntity.setUser(userEntity);
         userDetailEntity = userDetailRepository.save(userDetailEntity);
 //        userEntity.setUserDetailEntity(new userDetailEntity());
         userEntity = userRepository.save(userEntity);
@@ -72,7 +72,7 @@ public class UserService {
         return protectedUserDto;
     }
 
-    public Short deleteUserById(Short id) {
+    public Integer deleteUserById(Integer id) {
         Optional<UserEntity> userEntity = Optional.ofNullable(userRepository.findById(id).orElseThrow(EntityNotFoundException::new));
         userRepository.deleteById(id);
         return id;
@@ -82,7 +82,7 @@ public class UserService {
 
         String firstName = updateCompleteUserReqDto.getFirstName();
         String lastName = updateCompleteUserReqDto.getLastName();
-        Short userId = updateCompleteUserReqDto.getId();
+        Integer userId = updateCompleteUserReqDto.getId();
 
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
 
@@ -137,7 +137,7 @@ public class UserService {
         if (userEmail.equals(providedEmail)) {
             throw new DuplicateKeyException("User email already exists");
         } else {
-            UserEntity user = userRepository.findByEmail(userEmail);
+            UserEntity user = userRepository.findByEmail(userEmail).orElseThrow(EntityNotFoundException::new);
             user.setEmail(providedEmail);
             user = userRepository.save(user);
             ProtectedUserDto protectedUserDto = ProtectedUserDto.mapToDto(user);
@@ -156,7 +156,7 @@ public class UserService {
                 throw new BadRequestException("Passwords do not match");
             } else {
                 String hashedPassword = passwordEncoder.encode(password);
-                UserEntity userEntity = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+                UserEntity userEntity = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString()).orElseThrow(EntityNotFoundException::new);
                 userEntity.setPassword(hashedPassword);
                 userRepository.save(userEntity);
                 ProtectedUserDto protectedUserDto = ProtectedUserDto.mapToDto(userEntity);

@@ -45,23 +45,21 @@ public class UserDetailService {
         this.ioUtils = ioUtils;
     }
 
-    public ProtectedUserDto uploadProfileImage(MultipartFile profileImage) throws IOException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userEmail = authentication.getPrincipal().toString();
-        UserEntity userEntity = userRepository.findByEmail(userEmail);
-        UserDetailEntity userDetailEntity = userEntity.getUserDetailEntity();
+    public ProtectedUserDto uploadProfileImage(MultipartFile profileImage, UserEntity authUser) throws IOException {
+        UserEntity userEntity = userRepository.findByEmail(authUser.getEmail()).orElseThrow(EntityNotFoundException::new);
+        UserDetailEntity userDetailEntity = userEntity.getUserDetail();
         if (userDetailEntity == null) {
             throw new BadRequestException("UserDetailEntity is null.");
         }
-        if (userEntity.getUserDetailEntity().getProfileImage() == null) {
+        if (userEntity.getUserDetail().getProfileImage() == null) {
             StaticResourceEntity staticResource = fileUploadService.uploadSimpleImageStaticFolder(profileImage);
-            userEntity.getUserDetailEntity().setProfileImage(staticResource);
+            userEntity.getUserDetail().setProfileImage(staticResource);
             userRepository.save(userEntity);
             log.info("Profile image uploaded successfully");
         } else {
-            System.out.println(userEntity.getUserDetailEntity().getProfileImage());
+            System.out.println(userEntity.getUserDetail().getProfileImage());
 //            Delete file locally on server
-            ioUtils.deleteFileFromProjectPath(userEntity.getUserDetailEntity().getProfileImage().getPath());
+            ioUtils.deleteFileFromProjectPath(userEntity.getUserDetail().getProfileImage().getPath());
             StaticResourceEntity existingResource = userDetailEntity.getProfileImage();
 //            Remove reference first ,update to db then delete static resource
             userDetailEntity.setProfileImage(null);
@@ -77,23 +75,21 @@ public class UserDetailService {
         return ProtectedUserDto.mapToDto(userEntity);
     }
 
-    public ProtectedUserDto uploadCoverImage(MultipartFile coverImage) throws IOException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userEmail = authentication.getPrincipal().toString();
-        UserEntity userEntity = userRepository.findByEmail(userEmail);
-        UserDetailEntity userDetailEntity = userEntity.getUserDetailEntity();
+    public ProtectedUserDto uploadCoverImage(MultipartFile coverImage, UserEntity authUser) throws IOException {
+        UserEntity userEntity = userRepository.findByEmail(authUser.getEmail()).orElseThrow(EntityNotFoundException::new);
+        UserDetailEntity userDetailEntity = userEntity.getUserDetail();
         if (userDetailEntity == null) {
             throw new BadRequestException("UserDetailEntity is null.");
         }
-        if (userEntity.getUserDetailEntity().getCoverImage() == null) {
+        if (userEntity.getUserDetail().getCoverImage() == null) {
             StaticResourceEntity staticResource = fileUploadService.uploadSimpleImageStaticFolder(coverImage);
-            userEntity.getUserDetailEntity().setCoverImage(staticResource);
+            userEntity.getUserDetail().setCoverImage(staticResource);
             userRepository.save(userEntity);
             log.info("Cover image uploaded successfully");
         } else {
-            System.out.println(userEntity.getUserDetailEntity().getCoverImage());
+            System.out.println(userEntity.getUserDetail().getCoverImage());
 //            Delete file locally on server
-            ioUtils.deleteFileFromProjectPath(userEntity.getUserDetailEntity().getCoverImage().getPath());
+            ioUtils.deleteFileFromProjectPath(userEntity.getUserDetail().getCoverImage().getPath());
             StaticResourceEntity existingResource = userDetailEntity.getCoverImage();
 //            Remove reference first ,update to db then delete static resource
             userDetailEntity.setCoverImage(null);
@@ -109,23 +105,21 @@ public class UserDetailService {
         return ProtectedUserDto.mapToDto(userEntity);
     }
 
-    public ProtectedUserDto uploadThumbnail(MultipartFile thumbnail) throws IOException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userEmail = authentication.getPrincipal().toString();
-        UserEntity userEntity = userRepository.findByEmail(userEmail);
-        UserDetailEntity userDetailEntity = userEntity.getUserDetailEntity();
+    public ProtectedUserDto uploadThumbnail(MultipartFile thumbnail, UserEntity authUser) throws IOException {
+        UserEntity userEntity = userRepository.findByEmail(authUser.getEmail()).orElseThrow(EntityNotFoundException::new);
+        UserDetailEntity userDetailEntity = userEntity.getUserDetail();
         if (userDetailEntity == null) {
             throw new BadRequestException("UserDetailEntity is null.");
         }
-        if (userEntity.getUserDetailEntity().getThumbnailImage() == null) {
+        if (userEntity.getUserDetail().getThumbnailImage() == null) {
             StaticResourceEntity staticResource = fileUploadService.uploadSimpleImageStaticFolder(thumbnail);
-            userEntity.getUserDetailEntity().setThumbnailImage(staticResource);
+            userEntity.getUserDetail().setThumbnailImage(staticResource);
             userRepository.save(userEntity);
             log.info("Thumbnail image uploaded successfully");
         } else {
-            System.out.println(userEntity.getUserDetailEntity().getThumbnailImage());
+            System.out.println(userEntity.getUserDetail().getThumbnailImage());
 //            Delete file locally on server
-            ioUtils.deleteFileFromProjectPath(userEntity.getUserDetailEntity().getThumbnailImage().getPath());
+            ioUtils.deleteFileFromProjectPath(userEntity.getUserDetail().getThumbnailImage().getPath());
             StaticResourceEntity existingResource = userDetailEntity.getThumbnailImage();
 //            Remove reference first ,update to db then delete static resource
             userDetailEntity.setThumbnailImage(null);
@@ -144,8 +138,8 @@ public class UserDetailService {
     public ProtectedUserDto createUserAddress(CreateUserAddressReqDto createUserAddressReqDto) throws BadRequestException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getPrincipal().toString();
-        UserEntity userEntity = userRepository.findByEmail(userEmail);
-        UserDetailEntity userDetailEntity = userEntity.getUserDetailEntity();
+        UserEntity userEntity = userRepository.findByEmail(userEmail).orElseThrow(EntityNotFoundException::new);
+        UserDetailEntity userDetailEntity = userEntity.getUserDetail();
         if (userDetailEntity == null) {
             throw new BadRequestException("User details does not exists");
         }
@@ -158,7 +152,7 @@ public class UserDetailService {
         userAddressEntity.setDescriptiveAddress(createUserAddressReqDto.getDescriptiveAddress());
         userAddressEntity.setPrimaryPhoneNumber(createUserAddressReqDto.getPrimaryPhoneNumber());
         userAddressEntity.setSecondaryPhoneNumber(createUserAddressReqDto.getSecondaryPhoneNumber());
-        userAddressEntity.setUserDetailEntity(userEntity.getUserDetailEntity());
+        userAddressEntity.setUserDetail(userEntity.getUserDetail());
         userAddressRepository.save(userAddressEntity);
         log.info("Created user address");
         return ProtectedUserDto.mapToDto(userEntity);
@@ -171,7 +165,7 @@ public class UserDetailService {
             if (userAddress == null) {
                 throw new BadRequestException("Failed to find address.");
             }
-            UserDetailEntity userDetailEntity = userDetailRepository.findById(userAddress.getUserDetailEntity().getId()).orElseThrow(() -> new EntityNotFoundException("User detail not found"));
+            UserDetailEntity userDetailEntity = userDetailRepository.findById(userAddress.getUserDetail().getId()).orElseThrow(() -> new EntityNotFoundException("User detail not found"));
             userDetailEntity.setUserAddresses(List.of()); // force remove relationship inorder to make delete effect
             userAddressRepository.delete(userAddress);
             log.info("Deleted user address with ID: {}", addressId);

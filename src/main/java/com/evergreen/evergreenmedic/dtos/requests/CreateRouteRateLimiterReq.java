@@ -1,7 +1,7 @@
 package com.evergreen.evergreenmedic.dtos.requests;
 
 import com.evergreen.evergreenmedic.enums.CustomHttpMethodEnum;
-import com.evergreen.evergreenmedic.enums.UserRoleEnum;
+import com.evergreen.evergreenmedic.enums.UserRole;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -17,7 +17,7 @@ public class CreateRouteRateLimiterReq {
 
 
     @NotBlank
-    private UserRoleEnum userRole;
+    private UserRole userRole;
 
     @NotBlank
     private String routeUrl;

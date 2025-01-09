@@ -1,7 +1,7 @@
 package com.evergreen.evergreenmedic.entities;
 
 import com.evergreen.evergreenmedic.enums.CustomHttpMethodEnum;
-import com.evergreen.evergreenmedic.enums.UserRoleEnum;
+import com.evergreen.evergreenmedic.enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -29,7 +29,7 @@ public class RouteRateLimiterEntity {
 
     @Column(name = "user_role", nullable = false, length = 14)
     @Enumerated(EnumType.STRING)
-    private UserRoleEnum userRole;
+    private UserRole userRole;
 
     @Column(name = "route_url", nullable = false, length = 100, updatable = false)
     private String routeUrl;

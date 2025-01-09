@@ -4,6 +4,7 @@ import com.evergreen.evergreenmedic.dtos.ProtectedUserDto;
 import com.evergreen.evergreenmedic.dtos.requests.user_detail.CreateUserAddressReqDto;
 import com.evergreen.evergreenmedic.dtos.requests.user_detail.PartialUpdateUserAddressReqDto;
 import com.evergreen.evergreenmedic.entities.UserAddressEntity;
+import com.evergreen.evergreenmedic.entities.UserEntity;
 import com.evergreen.evergreenmedic.services.UserDetailService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -21,6 +22,7 @@ import java.util.UUID;
 
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
+
 @RestController
 @RequestMapping("api/v1/user-details")
 @Slf4j
@@ -32,36 +34,36 @@ public class UserDetailController {
     }
 
     @PostMapping(value = "/profile-image", consumes = MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ProtectedUserDto> uploadUserProfileImage(@RequestParam(name = "file", required = true) MultipartFile file, HttpServletRequest request) throws IOException {
+    public ResponseEntity<ProtectedUserDto> uploadUserProfileImage(@RequestParam(name = "file", required = true) MultipartFile file, HttpServletRequest request, @RequestAttribute("user") UserEntity authUser) throws IOException {
         if (request instanceof MultipartHttpServletRequest multipartRequest) {
             List<MultipartFile> files = multipartRequest.getFiles("file");
             if (files.size() > 1) {
                 throw new BadRequestException("Only one file is allowed.");
             }
         }
-        return ResponseEntity.status(HttpStatus.OK).body(userDetailService.uploadProfileImage(file));
+        return ResponseEntity.status(HttpStatus.OK).body(userDetailService.uploadProfileImage(file, authUser));
     }
 
     @PostMapping(value = "/cover-image", consumes = MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ProtectedUserDto> uploadUserCoverImage(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException {
+    public ResponseEntity<ProtectedUserDto> uploadUserCoverImage(@RequestParam("file") MultipartFile file, HttpServletRequest request, @RequestAttribute("user") UserEntity authUser) throws IOException {
         if (request instanceof MultipartHttpServletRequest multipartRequest) {
             List<MultipartFile> files = multipartRequest.getFiles("file");
             if (files.size() > 1) {
                 throw new BadRequestException("Only one file is allowed.");
             }
         }
-        return ResponseEntity.status(HttpStatus.OK).body(userDetailService.uploadCoverImage(file));
+        return ResponseEntity.status(HttpStatus.OK).body(userDetailService.uploadCoverImage(file, authUser));
     }
 
     @PostMapping(value = "/thumbnail", consumes = MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ProtectedUserDto> uploadUserThumbnail(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException {
+    public ResponseEntity<ProtectedUserDto> uploadUserThumbnail(@RequestParam("file") MultipartFile file, HttpServletRequest request, @RequestAttribute("user") UserEntity authUser) throws IOException {
         if (request instanceof MultipartHttpServletRequest multipartRequest) {
             List<MultipartFile> files = multipartRequest.getFiles("file");
             if (files.size() > 1) {
                 throw new BadRequestException("Only one file is allowed.");
             }
         }
-        return ResponseEntity.status(HttpStatus.OK).body(userDetailService.uploadThumbnail(file));
+        return ResponseEntity.status(HttpStatus.OK).body(userDetailService.uploadThumbnail(file, authUser));
     }
 
     @PostMapping(value = "/address")

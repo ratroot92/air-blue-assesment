@@ -31,16 +31,22 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 
+//    SMTP
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
 //    Validations
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 //    JPA
+//    JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.mockito:mockito-inline:3.8.0'
     runtimeOnly 'org.postgresql:postgresql'
 
 
-//    Lombok
+    //    Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 

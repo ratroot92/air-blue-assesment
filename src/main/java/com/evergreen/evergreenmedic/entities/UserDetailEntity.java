@@ -24,7 +24,7 @@ public class UserDetailEntity {
     @JsonBackReference
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id")
-    private UserEntity userEntity;
+    private UserEntity user;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "profile_image_id")
@@ -41,7 +41,7 @@ public class UserDetailEntity {
     @Column(name = "nationality", nullable = true, updatable = true)
     public String nationality;
 
-    @OneToMany(mappedBy = "userDetailEntity")
+    @OneToMany(mappedBy = "userDetail", fetch = FetchType.EAGER)
     @JsonManagedReference
     public List<UserAddressEntity> userAddresses;
 

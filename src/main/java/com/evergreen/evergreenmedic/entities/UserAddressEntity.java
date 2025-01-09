@@ -18,11 +18,11 @@ public class UserAddressEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    
+
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(name = "user_detail_id")
-    private UserDetailEntity userDetailEntity;
+    @JsonBackReference
+    private UserDetailEntity userDetail;
 
     @Column(name = "country", nullable = true, updatable = true)
     private String country;

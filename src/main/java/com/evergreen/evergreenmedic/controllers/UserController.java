@@ -38,12 +38,12 @@ public class UserController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Optional<ProtectedUserDto>> getUserById(@PathVariable("id") Short id) {
+    public ResponseEntity<Optional<ProtectedUserDto>> getUserById(@PathVariable("id") Integer id) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(id));
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Short> deleteUserById(@PathVariable("id") Short id) {
+    public ResponseEntity<Integer> deleteUserById(@PathVariable("id") Integer id) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.deleteUserById(id));
     }
 

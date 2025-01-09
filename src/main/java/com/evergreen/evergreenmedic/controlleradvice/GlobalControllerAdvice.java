@@ -11,12 +11,14 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MultipartException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,8 +30,21 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GlobalControllerAdvice {
 
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<Object> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+        ex.printStackTrace();
+        HashMap<String, String> errResponse = new HashMap<>();
+        errResponse.put("exception", ex.getClass().getName());
+        errResponse.put("status", HttpStatus.UNAUTHORIZED.name());
+        errResponse.put("error", ex.getMessage());
+        errResponse.put("statusCode", HttpStatus.UNAUTHORIZED.toString());
+        errResponse.put("stackTrace", Arrays.stream(ex.getStackTrace()).toArray().toString());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errResponse);
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException ex) {
+        ex.printStackTrace();
         HashMap<String, String> errResponse = new HashMap<>();
         errResponse.put("exception", ex.getClass().getName());
         errResponse.put("status", HttpStatus.NOT_FOUND.name());
@@ -41,6 +56,7 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<Object> handleExpiredJwtException(Exception ex, WebRequest request) {
+        ex.printStackTrace();
         HashMap<String, String> errResponse = new HashMap<>();
         errResponse.put("exception", ex.getClass().getName());
         errResponse.put("status", HttpStatus.UNAUTHORIZED.name());
@@ -52,6 +68,7 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleDataIntegrityViolationException(Exception ex, WebRequest request) {
+        ex.printStackTrace();
         HashMap<String, String> errResponse = new HashMap<>();
         errResponse.put("exception", ex.getClass().getName());
         errResponse.put("status", HttpStatus.BAD_REQUEST.name());
@@ -63,6 +80,7 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGlobalException(Exception ex, WebRequest request) {
+        ex.printStackTrace();
         HashMap<String, String> errResponse = new HashMap<>();
         errResponse.put("exception", ex.getClass().getName());
         errResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.name());
@@ -74,6 +92,8 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex, WebRequest request) {
+        ex.printStackTrace();
+
         HashMap<String, String> errResponse = new HashMap<>();
         errResponse.put("exception", ex.getClass().getName());
         errResponse.put("status", HttpStatus.UNAUTHORIZED.name());
@@ -85,6 +105,9 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(UnexpectedTypeException.class)
     public ResponseEntity<Object> handleUnexpectedTypeException(UnexpectedTypeException ex, WebRequest request) {
+        ex.printStackTrace();
+
+
         HashMap<String, String> errResponse = new HashMap<>();
         errResponse.put("exception", ex.getClass().getName());
         errResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.name());
@@ -96,6 +119,9 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(ClassCastException.class)
     public ResponseEntity<Object> handleClassCastException(ClassCastException ex, WebRequest request) {
+        ex.printStackTrace();
+
+
         HashMap<String, String> errResponse = new HashMap<>();
         errResponse.put("exception", ex.getClass().getName());
         errResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.name());
@@ -107,6 +133,9 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(UnsupportedOperationException.class)
     public ResponseEntity<Object> handleUnsupportedOperationException(UnsupportedOperationException ex, WebRequest request) {
+        ex.printStackTrace();
+
+
         HashMap<String, String> errResponse = new HashMap<>();
         System.out.println(Arrays.stream(ex.getStackTrace()).toArray().toString());
         errResponse.put("exception", ex.getClass().getName());
@@ -119,8 +148,8 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(ServletException.class)
     public ResponseEntity<Object> handleServletException(ServletException ex, WebRequest request) {
-        log.info("ServletException occurred: {}", ex.getMessage());
-        log.info("ServletException occurred: {}", ex.getStackTrace());
+        ex.printStackTrace();
+
         HashMap<String, String> errResponse = new HashMap<>();
         errResponse.put("exception", ex.getClass().getName());
         errResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.name());
@@ -149,6 +178,7 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<Object> handleBadRequestException(BadRequestException ex, WebRequest request) {
+        ex.printStackTrace();
 
         HashMap<String, String> errResponse = new HashMap<>();
         errResponse.put("exception", ex.getClass().getName());
@@ -161,6 +191,8 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, WebRequest request) {
+        ex.printStackTrace();
+
         BindingResult bindingResult = ex.getBindingResult();
         List<CustomFieldError> errorsLists = new ArrayList<CustomFieldError>();
 
@@ -180,4 +212,19 @@ public class GlobalControllerAdvice {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errResponse);
 
     }
+
+    @ExceptionHandler(MultipartException.class)
+    public ResponseEntity<Object> handleMultipartException(MultipartException ex, WebRequest request) {
+        ex.printStackTrace();
+
+        HashMap<String, String> errResponse = new HashMap<>();
+        errResponse.put("exception", ex.getClass().getName());
+        errResponse.put("status", HttpStatus.BAD_REQUEST.name());
+        errResponse.put("error", ex.getMessage());
+        errResponse.put("statusCode", HttpStatus.BAD_REQUEST.toString());
+        errResponse.put("stackTrace", Arrays.stream(ex.getStackTrace()).toArray().toString());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errResponse);
+    }
+
 }
+

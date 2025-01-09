@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class UpdateCompleteUserReqDto {
     @NotNull
-    private Short id;
+    private Integer id;
     @NotBlank
     private String firstName;
     @NotBlank
