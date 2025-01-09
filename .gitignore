@@ -5,6 +5,11 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+# Ignore the 'static' folder and its contents
+/static/
+
+# Explicitly ignore 'uploads/user/profile-images'
+/static/uploads/user/profile-images/
 ### STS ###
 .apt_generated
 .classpath
