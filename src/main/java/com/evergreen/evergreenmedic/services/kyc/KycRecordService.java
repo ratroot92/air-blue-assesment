@@ -7,17 +7,17 @@ import com.evergreen.evergreenmedic.enums.UserRole;
 import com.evergreen.evergreenmedic.enums.kyc.KycRecordStatus;
 import com.evergreen.evergreenmedic.enums.kyc.KycVerificationStatus;
 import com.evergreen.evergreenmedic.enums.kyc.kyc_level.KycLevelName;
+import com.evergreen.evergreenmedic.processors.KycProcessor;
 import com.evergreen.evergreenmedic.repositories.UserRepository;
 import com.evergreen.evergreenmedic.repositories.kyc.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class KycRecordService {
@@ -27,61 +27,28 @@ public class KycRecordService {
     private final KycVerificationRepository kycVerificationRepository;
     private final KycRecordLevelHistoryRepository kycRecordLevelHistoryRepository;
     private final com.evergreen.evergreenmedic.repositories.kyc.kycVerificationFieldRepository kycVerificationFieldRepository;
+    private final KycProcessor kycProcessor;
 
-    public KycRecordService(UserRepository userRepository, KycLevelRepository kycLevelRepository, KycRecordRepository kycRecordRepository, KycVerificationRepository kycVerificationRepository, KycRecordLevelHistoryRepository kycRecordLevelHistoryRepository, kycVerificationFieldRepository kycVerificationFieldRepository) {
+    public KycRecordService(UserRepository userRepository, KycLevelRepository kycLevelRepository, KycRecordRepository kycRecordRepository, KycVerificationRepository kycVerificationRepository, KycRecordLevelHistoryRepository kycRecordLevelHistoryRepository, kycVerificationFieldRepository kycVerificationFieldRepository, KycProcessor kycProcessor) {
         this.userRepository = userRepository;
         this.kycLevelRepository = kycLevelRepository;
         this.kycRecordRepository = kycRecordRepository;
         this.kycVerificationRepository = kycVerificationRepository;
         this.kycRecordLevelHistoryRepository = kycRecordLevelHistoryRepository;
         this.kycVerificationFieldRepository = kycVerificationFieldRepository;
+        this.kycProcessor = kycProcessor;
     }
 
-    public KycRecord performKyc(PerformKycReqDto performKycReqDto) throws JsonProcessingException {
+
+    public KycRecord performKyc(PerformKycReqDto performKycReqDto) throws JsonProcessingException, BadRequestException {
         int kycRecordId = performKycReqDto.getKycRecordId();
-
-        KycVerification reqKycVerification = new ObjectMapper().readValue(performKycReqDto.getKycVerification(), KycVerification.class);
-
+//        KycVerification reqKycVerification = new ObjectMapper().readValue(performKycReqDto.getKycVerification(), KycVerification.class);
         KycRecord kycRecord = kycRecordRepository.findById(kycRecordId).orElseThrow(EntityNotFoundException::new);
-
-        KycVerification subjectedKycVerificationFromDb = kycRecord.getKycVerifications().stream().filter(kycVerification -> Objects.equals(kycVerification.getId(), reqKycVerification.getId())).findFirst().orElseThrow(EntityNotFoundException::new);
-
-        if (subjectedKycVerificationFromDb.getKycVerificationFields().isEmpty()) {
-
-            List<KycVerificationField> kycVerificationFields = new ArrayList<KycVerificationField>();
-
-            for (KycRequirementField field : subjectedKycVerificationFromDb.getKycRequirement().getKycRequirementFields()) {
-
-                KycRequirementField reqBodyKycRequirementField = reqKycVerification.getKycRequirement().getKycRequirementFields().stream().filter(kycRequirementField -> Objects.equals(kycRequirementField.getId(), field.getId())).findFirst().orElseThrow(EntityNotFoundException::new);
-//              create & populate verification fields
-                KycVerificationField kycVerificationField = new KycVerificationField();
-                kycVerificationField.setFieldName(field.getLabel());
-                kycVerificationField.setFieldValue(reqBodyKycRequirementField.getValue());
-                kycVerificationField.setKycRequirementField(field);
-                kycVerificationField.setKycVerification(subjectedKycVerificationFromDb);
-                kycVerificationFields.add(kycVerificationField);
-            }
-
-            kycVerificationFields = kycVerificationFieldRepository.saveAll(kycVerificationFields);
-
-            subjectedKycVerificationFromDb.setKycVerificationFields(kycVerificationFields);
-            subjectedKycVerificationFromDb.setStatus(KycVerificationStatus.ATTEMPTED);
-
-
-            List<KycVerification> updatedKycVerifications = kycRecord.getKycVerifications().stream().map(kycVerification -> {
-                if (Objects.equals(kycVerification.getId(), subjectedKycVerificationFromDb.getId())) {
-                    return subjectedKycVerificationFromDb;
-                }
-                return kycVerification;
-            }).collect(Collectors.toList());
-
-            kycRecord.setKycVerifications(updatedKycVerifications);
-            kycRecordRepository.save(kycRecord);
-            return kycRecord;
-        } else {
-            return kycRecord;
-
+        KycVerification subjectedKycVerificationFromDb = kycRecord.getKycVerifications().stream().filter(kycVerification -> Objects.equals(kycVerification.getId(), performKycReqDto.getKycVerification().getId())).findFirst().orElseThrow(EntityNotFoundException::new);
+        if (subjectedKycVerificationFromDb.getStatus() == KycVerificationStatus.ATTEMPTED) {
+            throw new BadRequestException("Verification already attempted. Please wait for approval by admin.");
         }
+        return kycProcessor.process(kycRecord, performKycReqDto);
 
 
     }
@@ -113,10 +80,14 @@ public class KycRecordService {
 
 //            populate kyc verifications start
             List<KycVerification> kycVerifications = new ArrayList<KycVerification>();
+            boolean isFirstIteration = true;
             for (KycRequirement kycRequirement : userKycLevel.getKycRequirements()) {
                 KycVerification kycVerification = new KycVerification();
                 kycVerification.setKycRequirement(kycRequirement);
                 kycVerification.setKycRecord(userNewKycRecord);
+                kycVerification.setLocked(isFirstIteration);
+                kycVerification.setSequence(kycRequirement.getSequence());
+                isFirstIteration = false;
                 kycVerification = kycVerificationRepository.save(kycVerification);
                 kycVerifications.add(kycVerification);
             }

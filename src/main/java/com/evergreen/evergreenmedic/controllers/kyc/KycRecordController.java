@@ -26,8 +26,9 @@ public class KycRecordController {
 
     }
 
+
     @PostMapping(value = "/perform")
-    public ResponseEntity<KycRecord> performKyc(@ModelAttribute PerformKycReqDto performKycReqDto) throws BadRequestException, JsonProcessingException {
+    public ResponseEntity<KycRecord> performKyc(@RequestBody PerformKycReqDto performKycReqDto) throws BadRequestException, JsonProcessingException {
         return ResponseEntity.status(HttpStatus.OK).body(kycRecordService.performKyc(performKycReqDto));
     }
 

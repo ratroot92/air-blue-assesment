@@ -1,10 +1,11 @@
 package com.evergreen.evergreenmedic.enums.kyc.kyc_requirement;
 
 public enum KycRequirementFieldType {
-    PHONE,
-    EMAIL,
     TEXT,
+    EMAIL,
+    OTP_EMAIL,
+    PHONE,
+    OTP_PHONE,
     DOCUMENT,
-    VIDEO,
-    IMAGE
+    DOCUMENT_MULTIPLE
 }

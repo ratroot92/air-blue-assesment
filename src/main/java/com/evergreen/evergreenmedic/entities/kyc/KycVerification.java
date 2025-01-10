@@ -24,8 +24,7 @@ public class KycVerification {
     private KycRecord kycRecord;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "kyc_requirement_id", nullable = false
-    )
+    @JoinColumn(name = "kyc_requirement_id", nullable = false)
     @JsonIgnoreProperties("kycLevel")
     private KycRequirement kycRequirement;
 
@@ -35,6 +34,12 @@ public class KycVerification {
     @OneToMany(mappedBy = "KycVerification", fetch = FetchType.EAGER)
     @JsonIgnoreProperties("KycVerification")
     private List<KycVerificationField> kycVerificationFields = new ArrayList<KycVerificationField>();
+
+    @Column(name = "sequence", nullable = false)
+    private int sequence;
+
+    @Column(name = "locked", nullable = false)
+    private boolean isLocked;
 
 
 }

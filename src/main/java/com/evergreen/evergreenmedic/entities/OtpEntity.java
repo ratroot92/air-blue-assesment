@@ -30,7 +30,7 @@ public class OtpEntity {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
-    private Instant createdAt;
+    private Instant createdAt = Instant.now();
 
     @Column(name = "updated_at", nullable = false, updatable = true)
     @UpdateTimestamp

@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -85,17 +85,17 @@ public class AuthService {
             throw new BadRequestException("User already exists.");
         }
 // Verify OTP
-        OtpEntity otpEntity = otpRepository.findByOtpEmail(email);
+        Optional<OtpEntity> otpEntity = otpRepository.findByOtpEmail(email);
         if (otpEntity == null) {
             throw new BadRequestException("Otp not found.");
         }
 
-        if (!Objects.equals(otpEntity.getCode(), otpCode)) {
-            throw new BadRequestException("Invalid Otp provided.");
-        }
-        if (this.isOtpExpired(otpEntity)) {
-            throw new BadRequestException("Otp is expired.");
-        }
+//        if (!Objects.equals(otpEntity.getCode(), otpCode)) {
+//            throw new BadRequestException("Invalid Otp provided.");
+//        }
+//        if (this.isOtpExpired(otpEntity)) {
+//            throw new BadRequestException("Otp is expired.");
+//        }
 
 // Create user
         userEntity = new UserEntity();

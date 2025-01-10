@@ -37,7 +37,7 @@ public class EvergreenmedicApplication {
             senOtpReqDto.setEmail(email);
             senOtpReqDto.setOtpValidFor(OtpValidFor.REGISTER);
             OtpService otpService = context.getBean(OtpService.class);
-            otpService.sendOtp(senOtpReqDto);
+//            otpService.sendOtp(senOtpReqDto);
             RegisterUserReqDto registerUserReqDto = new RegisterUserReqDto();
             registerUserReqDto.setFirstName("Ahmad");
             registerUserReqDto.setLastName("Kabeer");

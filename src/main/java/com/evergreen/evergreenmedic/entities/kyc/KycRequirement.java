@@ -1,6 +1,7 @@
 package com.evergreen.evergreenmedic.entities.kyc;
 
 
+import com.evergreen.evergreenmedic.enums.kyc.kyc_requirement.KycRequirementActionType;
 import com.evergreen.evergreenmedic.enums.kyc.kyc_requirement.KycRequirementName;
 import com.evergreen.evergreenmedic.enums.kyc.kyc_requirement.KycRequirementVerificationMethod;
 import com.evergreen.evergreenmedic.enums.kyc.kyc_requirement.KycRequirementVerificationProvider;
@@ -41,6 +42,13 @@ public class KycRequirement {
     @Column(name = "verification_provider", nullable = false)
     @Enumerated(EnumType.STRING)
     private KycRequirementVerificationProvider verificationProvider;
+
+    @Column(name = "action_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private KycRequirementActionType actionType;
+
+    @Column(name = "action_uri", nullable = false)
+    private String actionUri;
 
     @Column(name = "sequence", nullable = false)
     private Integer sequence;

@@ -60,7 +60,7 @@ public class KycRequirementFieldService {
 
         KycRequirementField requirementField = new KycRequirementField();
         requirementField.setLabel("Document upload");
-        requirementField.setType(KycRequirementFieldType.IMAGE);
+        requirementField.setType(KycRequirementFieldType.DOCUMENT);
         requirementField.setKycRequirement(kycRequirement);
         requirementField = kycRequirementFieldRepository.save(requirementField);
 
@@ -78,7 +78,7 @@ public class KycRequirementFieldService {
 
         KycRequirementField requirementField = new KycRequirementField();
         requirementField.setLabel("email");
-        requirementField.setType(KycRequirementFieldType.EMAIL);
+        requirementField.setType(KycRequirementFieldType.OTP_EMAIL);
         requirementField.setKycRequirement(kycRequirement);
         requirementField = kycRequirementFieldRepository.save(requirementField);
 
@@ -94,7 +94,7 @@ public class KycRequirementFieldService {
     public KycRequirementField getPhoneField(KycRequirement kycRequirement) {
         KycRequirementField requirementField = new KycRequirementField();
         requirementField.setLabel("phone");
-        requirementField.setType(KycRequirementFieldType.PHONE);
+        requirementField.setType(KycRequirementFieldType.OTP_PHONE);
         requirementField.setKycRequirement(kycRequirement);
         requirementField = kycRequirementFieldRepository.save(requirementField);
 

@@ -23,9 +23,9 @@ public class OtpController {
         this.otpService = otpService;
     }
 
-    @PostMapping
+    @PostMapping("/email")
     public ResponseEntity<SendOtpResponseDto> sendOtp(@RequestBody @Valid SenOtpReqDto senOtpReqDto) throws BadRequestException {
-        boolean isSent = otpService.sendOtp(senOtpReqDto);
+        boolean isSent = otpService.sendEmailOtp(senOtpReqDto);
         SendOtpResponseDto sendOtpResponseDto = new SendOtpResponseDto();
         sendOtpResponseDto.setOtpSent(isSent);
         sendOtpResponseDto.setEmail(senOtpReqDto.getEmail());

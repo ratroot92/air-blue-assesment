@@ -27,14 +27,12 @@ public class KycRequirementField implements Serializable {
     @Column(name = "label", nullable = false)
     private String label;
 
-
     @Column(name = "value", insertable = false, nullable = true)
     private String value;
 
     @Column(name = "unique_id", nullable = false, unique = true)
     private String uniqueId;
-
-
+    
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "kyc_requirement_id", nullable = false)
     @JsonIgnoreProperties("kycRequirementFields")

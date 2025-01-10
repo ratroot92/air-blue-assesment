@@ -6,9 +6,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface OtpRepository extends JpaRepository<OtpEntity, Integer> {
     @Query(value = "SELECT * FROM otp WHERE otp_email = :email ORDER BY created_at ASC LIMIT 1", nativeQuery = true)
-    OtpEntity findByOtpEmail(@Param("email") String email);
+    Optional<OtpEntity> findByOtpEmail(@Param("email") String email);
 
 }
